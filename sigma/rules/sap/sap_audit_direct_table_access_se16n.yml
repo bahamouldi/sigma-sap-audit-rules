@@ -1,0 +1,32 @@
+title: SAP Security Audit Log - Direct Table Access via SE16N
+id: b19c9706-59f8-41cc-a20d-6e815ba21311
+status: tested
+description: |
+  SE16N (General Table Display) was started. SE16N is the most abused transaction in a
+  compromised SAP landscape because it permits direct read - and, in a number of
+  configurations, write - access to any table, entirely bypassing the PFCG role model.
+  Authorization for a table that the business role was never designed to expose is
+  therefore invisible in the role matrix but fully visible in the audit log.
+  This rule fires on the transaction start event; the semantic judgement about whether
+  that particular table access is legitimate belongs to the correlation layer.
+references:
+  - https://help.sap.com/docs/SAP_NETWEAVER_740/56bf1265a92e4b4d9a72448c579887af/c769bcb7f36611d3a6510000e835363f.html
+author: Baha Eddine Belhaj Mouldi
+date: 2026-10-09
+modified: 2026-10-09
+tags:
+  - attack.t1087
+  - attack.t1005
+logsource:
+  category: sap
+  product: netweaver
+detection:
+  selection:
+    event_type: transaction_start
+    tcode: SE16N
+  falsepositives:
+  - Functional consultants analysing data tables during implementation
+  - Approved data investigation following an incident
+  - Integration or migration work using SE16N for data upload
+  level: high
+  condition: selection

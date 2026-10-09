@@ -1,0 +1,34 @@
+title: SAP Security Audit Log - Remote Function Module Call
+id: 1e05f9d7-9f7c-4d59-afc1-e6d66c0e1d47
+status: tested
+description: |
+  A remote enabled function module was invoked over RFC. SAP records "RFC calls to
+  function modules" and "successful and unsuccessful RFC logon attempts" as distinct
+  recordable event classes, and RFC destinations are administered in SM59 - the same
+  transaction covered by this ruleset in its direct-table and transaction-start scope.
+  Remote function module execution is the standard mechanism for privilege escalation
+  inside SAP and for pivoting between systems in an estate: a single call such as
+  SU01_USER_CREATE or a generic table modification function can act on data the calling
+  user was never authorised for. Auditing RFC traffic is consequently one of the few
+  controls that sees an attack before authorisation is applied.
+  The rule covers the call itself. Deciding whether a given RFC destination and function
+  combination is expected requires the RFC inventory (SM59) and belongs to correlation.
+references:
+  - https://help.sap.com/docs/SAP_NETWEAVER_740/56bf1265a92e4b4d9a72448c579887af/c769bcb7f36611d3a6510000e835363f.html
+author: Baha Eddine Belhaj Mouldi
+date: 2026-10-09
+modified: 2026-10-09
+tags:
+  - attack.t1021
+  - attack.t1550.003
+logsource:
+  category: sap
+  product: netweaver
+detection:
+  selection:
+    event_type: rfc_function_module_call
+  falsepositives:
+  - Scheduled integration jobs calling standard business function modules
+  - Approved cross-system process integration traffic
+  level: medium
+  condition: selection

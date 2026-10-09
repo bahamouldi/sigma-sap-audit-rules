@@ -1,0 +1,33 @@
+title: SAP Security Audit Log - User Master Record Change
+id: 21decf18-dcbd-43a2-94ca-b0dac9cd2cc6
+status: tested
+description: |
+  A change to a user master record was recorded in the SAP Security Audit Log.
+  User master maintenance is performed in SU01 and is one of the event classes SAP
+  documents as recordable ("Changes to user master records"). Privilege escalation
+  through the user master is a first-order risk: creating a privileged user, unlocking
+  a locked account, or attaching an authorization profile all happen here and all
+  legitimately land in this event type.
+  Detection value is not in the single event but in the context: this rule is the raw
+  material for correlation with an unusual user, client host, or time window.
+references:
+  - https://help.sap.com/docs/SAP_NETWEAVER_740/56bf1265a92e4b4d9a72448c579887af/c769bcb7f36611d3a6510000e835363f.html
+  - https://help.sap.com/docs/SAP_S4HANA_ON-PREMISE/280f016edb8049e998237fcbd80558e7/4d41bec4aa601c86e10000000a42189b.html
+author: Baha Eddine Belhaj Mouldi
+date: 2026-10-09
+modified: 2026-10-09
+tags:
+  - attack.t1098
+  - attack.t1136
+logsource:
+  category: sap
+  product: netweaver
+detection:
+  selection:
+    event_type: user_master_change
+  falsepositives:
+  - Authorised user administration via a formal process (joiner/mover/leaver review)
+  - Service account maintenance performed by the BASIS team
+  - Emergency access assignment following an incident
+  level: medium
+  condition: selection

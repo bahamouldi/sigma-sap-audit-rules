@@ -1,0 +1,42 @@
+title: SAP Security Audit Log - Change to the Security Audit Log Configuration
+id: 21e06172-f2d1-4543-bfa6-0cf706768578
+status: tested
+description: |
+  A change to the security audit log configuration was recorded, or old audit data was
+  administrated. SAP explicitly lists "Changes to the audit configuration" as a
+  recordable event class, and the related administrative transactions are SM19 (filter
+  configuration), RSAU_CONFIG (release 752 and later), SM20 (read) and SM18 (delete old
+  audit files).
+  This is the highest value rule in the set. An intruder who needs to operate quietly
+  has an interest in the events that would betray them being removed, and disabling or
+  loosening a filter in SM19 removes coverage for every subsequent event - including the
+  rules in this repository. Monitoring the monitoring is therefore the control that
+  protects all the others.
+  Note that audit data is written to the application server file system rather than to
+  the database, so integrity protection depends on the rsau/integrity parameter and on
+  OS-level access control of the log directory.
+references:
+  - https://help.sap.com/docs/SAP_NETWEAVER_740/56bf1265a92e4b4d9a72448c579887af/c769bcb7f36611d3a6510000e835363f.html
+  - https://userapps.support.sap.com/sap/support/knowledge/en/2546993
+author: Baha Eddine Belhaj Mouldi
+date: 2026-10-09
+modified: 2026-10-09
+tags:
+  - attack.t1562.002
+logsource:
+  category: sap
+  product: netweaver
+detection:
+  selection:
+    event_type: audit_config_change
+  additional_admin_transactions:
+    event_type: transaction_start
+    tcode:
+      - SM19
+      - RSAU_CONFIG
+      - SM18
+  falsepositives:
+  - BASIS team extending audit coverage to a new event class
+  - Auditors configuring temporary evidence collection filters
+  level: high
+  condition: selection or additional_admin_transactions

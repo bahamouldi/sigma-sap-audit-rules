@@ -1,0 +1,33 @@
+title: SAP Security Audit Log - Repeated Unsuccessful Dialog Logon
+id: 9c32e1c1-1579-4405-80ba-7ba45fc40408
+status: tested
+description: |
+  Multiple unsuccessful dialog logon attempts recorded for the same user. SAP records
+  both successful and unsuccessful dialog logon attempts, and unsuccessful password
+  checks, as separate event types in the security audit log.
+  In an ERP the logon failure alone is usually noise, because a busy morning produces
+  many fat-finger failures. What matters is repetition against a single account, which
+  is what distinguishes a user struggling from an authentication source testing valid
+  account names.
+  Count-based: the rule matches a threshold on the aggregated event count per user over
+  the window defined by the backend configuration, not a single event.
+references:
+  - https://help.sap.com/docs/SAP_NETWEAVER_740/56bf1265a92e4b4d9a72448c579887af/c769bcb7f36611d3a6510000e835363f.html
+author: Baha Eddine Belhaj Mouldi
+date: 2026-10-09
+modified: 2026-10-09
+tags:
+  - attack.t1110.001
+logsource:
+  category: sap
+  product: netweaver
+detection:
+  selection:
+    event_type: logon_failure
+    status: FAIL
+  falsepositives:
+  - User with a forgotten password retrying several times
+  - Password expiry race affecting a batch of users at the same time
+  - SSO or password vault connectivity problem causing repeated re-authentication
+  level: medium
+  condition: selection | count() by user > 5

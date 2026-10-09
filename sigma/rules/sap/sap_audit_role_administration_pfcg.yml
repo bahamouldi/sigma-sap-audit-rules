@@ -1,0 +1,32 @@
+title: SAP Security Audit Log - Authorization Role Administration (PFCG)
+id: af9ffb62-89e3-4958-b483-418488042fd2
+status: tested
+description: |
+  A role or authorization profile was created or modified, or a role was assigned to
+  a user. Role maintenance in PFCG is where authorization changes are made, and it is
+  the natural upstream of a segregation-of-duties violation: a role that both creates
+  and approves an object is a control failure regardless of who holds it.
+  This rule intentionally does not attempt to judge whether the change is correct -
+  that decision needs the SoD ruleset and the business process. It isolates the change
+  so that correlation can attach the who / from where / at what time context.
+references:
+  - https://help.sap.com/docs/SAP_NETWEAVER_AS_ABAP_FOR_SOH_740/9737050ef01843f19572591b42128f1b/4c5bdc4997817511e10000000a42189b.html
+author: Baha Eddine Belhaj Mouldi
+date: 2026-10-09
+modified: 2026-10-09
+tags:
+  - attack.t1098.001
+  - attack.t1221
+logsource:
+  category: sap
+  product: netweaver
+detection:
+  selection:
+    event_type:
+      - role_change
+      - role_assignment
+  falsepositives:
+  - Planned role redesign executed through the normal change process
+  - SoD remediation performed as part of a quarterly access review
+  level: medium
+  condition: selection
